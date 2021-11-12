@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10.3.9
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_DATABASE: cells
+      MYSQL_USER: pydio
+      MYSQL_PASSWORD: oidyp
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
+    volumes:
+      - mysqldir:/var/lib/mysql
+      - mysqlrun:/var/run/mysqld
+
+  cells:
+    image: pydio/cells:latest
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    environment:
+      - CELLS_LOG_LEVEL=production
+    volumes:
+      - data:/var/cells/data
+      - cellsdir:/var/cells
+      - mysqlrun:/var/run/mysqld
+
+volumes:
+  data: {}
+  cellsdir: {}
+  mysqldir: {}
+  mysqlrun: {}
