@@ -1,0 +1,15 @@
+kind: pipeline
+name: modificación de comando y entrypoint
+
+services:
+- name: web
+  image: nginx
+  entrypoint: [ nginx-debug ]
+  command: [ "-g", "daemon off;" ]
+
+steps:
+- name: comprobar el servicio
+  image: alpine
+  commands:
+  - apk -U add curl
+  - curl web

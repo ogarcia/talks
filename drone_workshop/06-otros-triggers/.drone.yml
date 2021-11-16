@@ -1,0 +1,92 @@
+---
+kind: pipeline
+name: trigger master
+
+steps:
+- name: solo en master
+  image: alpine
+  commands:
+  - echo "Estas en la rama ${DRONE_COMMIT_BRANCH}"
+
+trigger:
+  branch:
+  - master
+
+---
+kind: pipeline
+name: trigger develop
+
+steps:
+- name: solo en develop
+  image: alpine
+  commands:
+  - echo "Estas en la rama ${DRONE_COMMIT_BRANCH}"
+
+trigger:
+  branch:
+  - develop
+
+---
+kind: pipeline
+name: trigger no test
+
+steps:
+- name: en cualquier rama excepto en test
+  image: alpine
+  commands:
+  - echo "Estas en la rama ${DRONE_COMMIT_BRANCH}"
+
+trigger:
+  branch:
+    exclude:
+    - test
+
+---
+kind: pipeline
+name: por referencia
+
+steps:
+- name: solo cuando se genera una tag o en cualquier rama que empiece por feature-*
+  image: alpine
+  commands:
+  - 'echo "Rama: ${DRONE_COMMIT_BRANCH}"'
+  - 'echo "Tag: ${DRONE_TAG}"'
+
+trigger:
+  ref:
+  - refs/heads/feature-*
+  - refs/tags/*
+
+---
+kind: pipeline
+name: por evento
+
+steps:
+- name: al generar un evento
+  image: alpine
+  commands:
+  - echo "Se ha producido un evento de ${DRONE_BUILD_EVENT}"
+
+trigger:
+  event:
+  - push
+  - pull_request
+  - tag
+  - promote
+  - rollback
+
+---
+kind: pipeline
+name: al promocionar en pro
+
+steps:
+- name: promocionar en pro
+  image: alpine
+  commands:
+  - echo "Se ha producido un evento de ${DRONE_BUILD_EVENT} en ${DRONE_DEPLOY_TO}"
+
+trigger:
+  event:
+  - promote
+  target:
+  - pro

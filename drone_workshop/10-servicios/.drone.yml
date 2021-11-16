@@ -1,0 +1,41 @@
+kind: pipeline
+name: services
+
+services:
+- name: nginx
+  image: alpine
+  commands:
+  - apk -U add nginx
+  - mkdir /run/nginx
+  - echo 'daemon off;' > /etc/nginx/modules/nodaemon.conf
+  - nginx
+
+steps:
+- name: comprobar servicio
+  image: alpine
+  commands:
+  - sleep 2
+  - apk -U add curl
+  - curl -v nginx
+
+- name: si enviamos algo a segundo plano no hay control
+  image: alpine
+  detach: true
+  commands:
+  - false
+
+- name: nginx2
+  image: alpine
+  detach: true
+  commands:
+  - apk -U add nginx
+  - mkdir /run/nginx
+  - echo 'daemon off;' > /etc/nginx/modules/nodaemon.conf
+  - nginx
+
+- name: segunda comprobación
+  image: alpine
+  commands:
+  - sleep 2
+  - apk -U add curl
+  - curl -v nginx2

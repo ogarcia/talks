@@ -1,0 +1,39 @@
+kind: pipeline
+name: mysql
+
+services:
+- name: database
+  image: mysql
+  environment:
+    MYSQL_ROOT_PASSWORD: rootpasswd
+    MYSQL_DATABASE: db
+    MYSQL_USER: user
+    MYSQL_PASSWORD: passwd
+
+steps:
+- name: poblar la base de datos
+  image: mysql
+  commands:
+  - sleep 60
+  - /usr/bin/mysql -hdatabase -prootpasswd db < database.sql
+
+- name: leer la base de datos
+  image: python:3-alpine
+  commands:
+  - apk -U add gcc musl-dev libffi-dev openssl-dev
+  - pip install -r requirements.txt
+  - python read-database.py
+
+- name: insertar en la base de datos
+  image: python:3-alpine
+  commands:
+  - apk -U add gcc musl-dev libffi-dev openssl-dev
+  - pip install -r requirements.txt
+  - python insert-database.py
+
+- name: leer la base de datos tras la inserción
+  image: python:3-alpine
+  commands:
+  - apk -U add gcc musl-dev libffi-dev openssl-dev
+  - pip install -r requirements.txt
+  - python read-database.py

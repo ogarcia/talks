@@ -1,0 +1,8 @@
+kind: pipeline
+name: hola drone
+
+steps:
+- name: hola drone
+  image: alpine
+  commands:
+  - echo "Hola drone"

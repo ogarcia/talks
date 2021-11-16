@@ -1,0 +1,16 @@
+kind: pipeline
+name: entorno
+
+steps:
+- name: mostrar entorno
+  image: alpine
+  environment:
+    VERSION_MAJOR: 1
+    VERSION_MINOR: 0
+    VERSION_REVISION: 2
+    OS: linux
+    ARCH: amd64
+  commands:
+  - 'echo "Version: $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_REVISION}"'
+  - 'echo "Sistema: $OS"'
+  - 'echo "Arquitectura: $ARCH"'

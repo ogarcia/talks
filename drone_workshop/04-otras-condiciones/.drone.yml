@@ -1,0 +1,105 @@
+kind: pipeline
+name: otras condiciones
+
+steps:
+- name: solo en master
+  image: alpine
+  commands:
+  - echo "Estas en la rama ${DRONE_COMMIT_BRANCH}"
+  when:
+    branch: master
+
+- name: solo en develop
+  image: alpine
+  commands:
+  - echo "Estas en la rama ${DRONE_COMMIT_BRANCH}"
+  when:
+    branch: develop
+
+- name: en cualquier rama que no sea master
+  image: alpine
+  commands:
+  - echo "Estas en la rama ${DRONE_COMMIT_BRANCH}"
+  when:
+    branch:
+      exclude:
+      - master
+
+- name: solo cuando se genera una tag
+  image: alpine
+  commands:
+  - echo "Has creado un tag ${DRONE_TAG}"
+  when:
+    ref: refs/tags/*
+
+- name: solo cuando se genera una tag de versión
+  image: alpine
+  commands:
+  - echo "Has creado un tag ${DRONE_TAG}"
+  when:
+    ref: refs/tags/v*
+
+- name: solo cuando se genera una tag o en cualquier rama que empiece por feature-*
+  image: alpine
+  commands:
+  - 'echo "Rama: ${DRONE_COMMIT_BRANCH}"'
+  - 'echo "Tag: ${DRONE_TAG}"'
+  when:
+    ref:
+    - refs/heads/feature-*
+    - refs/tags/*
+
+- name: por evento
+  image: alpine
+  commands:
+  - echo "Se ha producido un evento de ${DRONE_BUILD_EVENT}"
+  when:
+    event:
+    - push
+    - pull_request
+    - tag
+    - promote
+    - rollback
+
+- name: solo en el repositorio otras-condiciones de drone y ogarcia
+  image: alpine
+  commands:
+  - echo "Estas en el repositorio ${DRONE_REPO}"
+  - echo "Esto es útil cuando se tienen habilitados los forks y queremos limitar el alcance"
+  when:
+    repo:
+    - drone/otras-condiciones
+    - ogarcia/otras-condiciones
+
+- name: solo en la instancia local
+  image: alpine
+  commands:
+  - echo "Máquina ${DRONE_SYSTEM_HOST}"
+  when:
+    instance: [ localhost, "*.localhost", "hell:10090" ]
+
+- name: al promocionar independientemente de en que entorno
+  image: alpine
+  commands:
+  - echo "Se ha producido un evento de ${DRONE_BUILD_EVENT}"
+  when:
+    event:
+    - promote
+
+- name: en pro independientemente de si se trata de una promocion o un rollback
+  image: alpine
+  commands:
+  - echo "Se ha producido un evento de ${DRONE_BUILD_EVENT} en ${DRONE_DEPLOY_TO}"
+  when:
+    target: pro
+
+- name: al promocionar pero solo en pro o pre
+  image: alpine
+  commands:
+  - echo "Se ha producido un evento de ${DRONE_BUILD_EVENT} en ${DRONE_DEPLOY_TO}"
+  when:
+    event:
+    - promote
+    target:
+    - pro
+    - pre

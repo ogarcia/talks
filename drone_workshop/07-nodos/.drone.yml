@@ -1,0 +1,13 @@
+kind: pipeline
+name: nodos
+
+steps:
+- name: ejecución en nodo
+  image: alpine
+  commands:
+  - echo "Ejecutandose en ${DRONE_RUNNER_HOST}"
+
+node:
+  disk: ssd
+  memory: high
+  cpu: fast

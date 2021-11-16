@@ -1,0 +1,52 @@
+kind: pipeline
+name: volumenes
+
+steps:
+- name: listar tmp
+  image: alpine
+  volumes:
+  - name: tmp
+    path: /host-tmp
+  commands:
+  - echo "Listado del tmp en la maquina host"
+  - ls -la /host-tmp
+
+- name: escribir en volumen temporal
+  image: alpine
+  volumes:
+  - name: cache
+    path: /cache
+  commands:
+  - echo "Usando el volumen temporal" > /cache/test.txt
+  - ls -l /cache
+
+- name: leer del volumen temporal
+  image: alpine
+  volumes:
+  - name: cache
+    path: /cache
+  commands:
+  - ls -l /cache
+  - cat /cache/test.txt
+
+- name: manejar docker
+  image: alpine
+  privileged: true
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
+  commands:
+  - apk -U upgrade
+  - apk add docker
+  - docker image ls
+  - docker ps -a
+
+volumes:
+- name: tmp
+  host:
+    path: /tmp
+- name: cache
+  temp: {}
+- name: docker
+  host:
+    path: /var/run/docker.sock

@@ -1,0 +1,39 @@
+kind: pipeline
+name: condiciones por estado
+
+steps:
+- name: fallo
+  image: alpine
+  commands:
+  - false
+
+- name: solo en fallo uno
+  image: alpine
+  commands:
+  - echo "El pipeline ha fallado, ejecutamos este paso"
+  when:
+    status: failure
+
+- name: solo en fallo dos
+  image: alpine
+  commands:
+  - echo "Se puede ejecutar mas de un paso aunque falle"
+  when:
+    status:
+    - failure
+
+- name: ejecutar siempre uno
+  image: alpine
+  commands:
+  - echo "O un paso que se ejecute aunque haya fallo"
+  when:
+    status: [ success, failure ]
+
+- name: ejecutar siempre dos
+  image: alpine
+  commands:
+  - echo "Usando el otro formato para status"
+  when:
+    status:
+    - success
+    - failure

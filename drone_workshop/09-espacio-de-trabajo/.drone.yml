@@ -1,0 +1,29 @@
+kind: pipeline
+name: espacio de trabajo
+
+steps:
+- name: listar el espacio de trabajo y la base
+  image: alpine
+  commands:
+  - pwd
+  - ls -la
+  - ls -l /base
+
+- name: crear fichero en el directorio base
+  image: alpine
+  commands:
+  - pwd
+  - echo "Se crea un fichero en el directiorio base" > /base/texto.txt
+  - ls -lR /base
+
+- name: recuperar el contenido del directorio base
+  image: alpine
+  commands:
+  - pwd
+  - echo "Recuperamos el contenido del directorio base"
+  - cat /base/texto.txt
+  - ls -lR /base
+
+workspace:
+  base: /base
+  path: repositorio

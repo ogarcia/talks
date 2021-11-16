@@ -1,6 +1,6 @@
 # Docker Workshop
 
-La presentación asociada a este _Workshop_ pueden encontrarse [aquí][talk].
+La presentación asociada a este _Workshop_ puede encontrarse [aquí][talk].
 
 [talk]: https://slides.com/oamor/docker-workshop
 

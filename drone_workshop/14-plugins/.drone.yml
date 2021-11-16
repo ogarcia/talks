@@ -1,0 +1,41 @@
+kind: pipeline
+name: cache plugin
+
+steps:
+- name: restaurar cache
+  image: drillster/drone-volume-cache
+  volumes:
+  - name: cache
+    path: /cache
+  settings:
+    restore: true
+    mount:
+    - cache_uno
+    - cache_dos
+
+- name: usar cache
+  image: alpine
+  commands:
+  - ls -l
+  - mkdir -p cache_uno
+  - mkdir -p cache_dos
+  - echo "UNO" >> cache_uno/texto_uno.txt
+  - echo "DOS" >> cache_dos/texto_dos.txt
+  - cat cache_uno/texto_uno.txt
+  - cat cache_dos/texto_dos.txt
+
+- name: reconstruir cache
+  image: drillster/drone-volume-cache
+  volumes:
+  - name: cache
+    path: /cache
+  settings:
+    rebuild: true
+    mount:
+    - cache_uno
+    - cache_dos
+
+volumes:
+- name: cache
+  host:
+    path: /tmp/cache

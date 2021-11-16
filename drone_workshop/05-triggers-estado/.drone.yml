@@ -1,0 +1,47 @@
+---
+kind: pipeline
+name: simular build
+
+steps:
+- name: build
+  image: alpine
+  commands:
+  - echo "Aquí iría el make"
+
+---
+kind: pipeline
+name: simular un despliegue
+
+steps:
+- name: deploy
+  image: alpine
+  commands:
+  - echo "Aquí iría el pedazo despliegue"
+
+trigger:
+  status:
+  - success
+
+depends_on:
+- simular build
+
+---
+kind: pipeline
+name: avisar en caso de fallo
+
+clone:
+  disable: true
+
+steps:
+- name: error
+  image: alpine
+  commands:
+  - echo "HA PETAO!"
+
+trigger:
+  status:
+    - failure
+
+depends_on:
+- simular build
+- simular un despliegue

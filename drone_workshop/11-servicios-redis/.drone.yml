@@ -1,0 +1,19 @@
+kind: pipeline
+name: redis
+
+services:
+- name: redis
+  image: redis
+
+steps:
+- name: redis set
+  image: redis
+  commands:
+  - redis-cli -h redis ping
+  - redis-cli -h redis set FOO bar
+
+- name: redis get
+  image: redis
+  commands:
+  - redis-cli -h redis ping
+  - redis-cli -h redis get FOO

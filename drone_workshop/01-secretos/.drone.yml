@@ -1,0 +1,56 @@
+kind: pipeline
+name: secretos
+
+steps:
+- name: mostrar user y pass
+  image: alpine
+  commands:
+  - echo $USER
+  - echo $PASS
+  environment:
+    USER:
+      from_secret: user
+    PASS:
+      from_secret: pass
+
+- name: insertar user en un fichero
+  image: alpine
+  commands:
+  - echo "user = $${USER}" > mi.conf
+  environment:
+    USER:
+      from_secret: user
+
+- name: insertar pass en el mismo fichero
+  image: alpine
+  commands:
+  - echo "pass = $${PASS}" >> mi.conf
+  environment:
+    PASS:
+      from_secret: pass
+
+- name: leer el fichero
+  image: alpine
+  commands:
+  - cat mi.conf
+
+- name: sobre las variables
+  image: alpine
+  commands:
+  - |
+    echo "Esto se retorna como un valor preprocesado (se envía el valor en lugar de la variable):" \
+      "${DRONE_COMMIT_AUTHOR} <${DRONE_COMMIT_AUTHOR_EMAIL}>"
+  - echo "Sin embargo, esto si se pasa como variables -> $DRONE_REPO - $DRONE_REPO_BRANCH"
+  - echo "Y esto tambien -> $${DRONE_MACHINE} - $${DRONE_SYSTEM_HOST}"
+  - echo "Pero esto usa el preprocesado como en el primer ejemplo -> ${DRONE_MACHINE} - ${DRONE_SYSTEM_HOST}"
+  - echo "Ojo con los dos puntos, para usarlos hay que entrecomillar"
+  - 'echo "De esta forma. Se ejecuta en una plataforma: $${DRONE_RUNNER_PLATFORM}"'
+  - |
+    echo "O usar la multilinea. Se ejecuta en la máquina: $${DRONE_RUNNER_HOSTNAME}"
+    echo 'Que ademas te permite "comillas"'
+    echo "De cualquier 'tipo'"
+  environment:
+    USER:
+      from_secret: user
+    PASS:
+      from_secret: pass
