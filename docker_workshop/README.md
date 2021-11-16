@@ -59,10 +59,10 @@ resulta mucho mas práctico buscar vía web.
 
 Para descargar las imágnes utilizaremos el comando `docker pull`, ej.
 ```
-docker pull alpine:3.14.2
+docker pull alpine:3.14.3
 ```
 
-Este comando descargará la imagen de _Alpine Linux_ en su versión 3.14.2. Si
+Este comando descargará la imagen de _Alpine Linux_ en su versión 3.14.3. Si
 no se le espefica el _tag_ entonces descargará automáticamente el _tag_
 _latest_ que, en imagenes oficiales, coincide siempre con la última versión
 disponible.
@@ -71,7 +71,7 @@ disponible.
 
 Para lanzar la imagen descargada usaremos el comando `docker run`
 ```
-docker run -t -i --rm alpine:3.14.2
+docker run -t -i --rm alpine:3.14.3
 ```
 
 A este comando le hemos pasado los siguientes parámetros.
@@ -104,7 +104,7 @@ adelante).
 
 Veamos un ejemplo.
 ```
-docker run -t -i --name gpul alpine:3.14.2
+docker run -t -i --name gpul alpine:3.14.3
 apk add -U nginx
 echo "daemon off;" >> /etc/nginx/nginx.conf
 exit
@@ -268,7 +268,7 @@ datos utilizamos los volúmenes.
 
 La forma mas sencilla de utilizar un volumen sería la siguiente.
 ```
-docker run -t -i --rm -v /tmp/volumen:/volumen alpine:3.14.2
+docker run -t -i --rm -v /tmp/volumen:/volumen alpine:3.14.3
 ```
 
 Al pasarle el parámetro `-v` le estamos indicando que queremos utilizar un
@@ -290,7 +290,7 @@ forma _correcta_ de usarlos es utilizando el comando `docker volume`.
 Para crear y usar un volumen.
 ```
 docker volume create gpulvolume
-docker run -t -i --rm -v gpulvolume:/volumen alpine:3.14.2
+docker run -t -i --rm -v gpulvolume:/volumen alpine:3.14.3
 ```
 
 Si inspeccionamos el volumen creado con la orden `docker volume inspect
@@ -313,7 +313,7 @@ Para crear una red y utilizarla.
 ```
 docker network create gpulnet
 docker run -d --network gpulnet --name gpulnginx gpulimage:1 nginx
-docker run -t -i --rm --network gpulnet alpine:3.14.2
+docker run -t -i --rm --network gpulnet alpine:3.14.3
 # apk -U add curl
 # curl -v http://gpulnginx
 ```
@@ -333,7 +333,7 @@ Si revisamos el fichero `dockerfiles/alpine-nginx/Dockerfile` veremos que
 realmente se trata de un listado de comandos a ejecutar. En este caso lo que
 hace es lo siguiente.
 
-1. Indica que debe partir de `alpine:3.14.2`.
+1. Indica que debe partir de `alpine:3.14.3`.
 2. Ejecuta un upgrade de los paquetes.
 3. Instala _nginx_ y realiza una configuración del mismo para que quede en
    primer plano al ejecutarse.

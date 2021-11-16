@@ -1,4 +1,4 @@
-FROM alpine:3.14.2
+FROM alpine:3.14.3
 
 RUN apk -U upgrade && apk add nginx && echo "daemon off;" >> /etc/nginx/nginx.conf
 COPY nginx-default.conf /etc/nginx/http.d/default.conf
