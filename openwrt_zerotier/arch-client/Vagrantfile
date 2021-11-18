@@ -1,0 +1,14 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ogarcia/archlinux-x64"
+  config.vm.hostname = "client"
+  config.vm.network "private_network", ip: "192.168.58.10", auto_config: false
+  config.vm.provision "shell", inline: <<-SHELL
+    ip route del default
+    ip address add dev enp0s8 192.168.88.88/24
+    ip link set dev enp0s8 up
+    ip route add default via 192.168.88.1
+  SHELL
+end

@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/buster64"
+  config.vm.hostname = "pppoe-server"
+  config.vm.network "private_network", ip: "192.168.60.69"
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get -yq install apt-src iptables-persistent ppp
+    apt-src update
+    apt-src install rp-pppoe
+    apt-src build rp-pppoe
+    dpkg -i pppoe_*deb
+    mv /etc/ppp/pap-secrets /etc/ppp/pap-secrets.default
+    echo '"adslppp@telefonicanetpa" * "adslppp" 10.88.88.88' > /etc/ppp/pap-secrets
+    echo -e 'auth\nnetmask 255.255.255.255\nms-dns 1.1.1.1' > /etc/ppp/pppoe-server-options
+    cat > /etc/systemd/system/pppoe-server.service << EOF
+[Unit]
+Description=pppoe-server
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/pppoe-server -F -I eth1 -L 10.99.99.1 -R 10.88.88.1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl start pppoe-server
+    systemctl enable pppoe-server
+    sysctl -w net.ipv4.ip_forward=1
+    echo 'net.ipv4.ip_forward = 1' > /etc/sysctl.d/10-ip-forward.conf
+    cat > /etc/iptables/rules.v4 << EOF
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A FORWARD -i ppp0 -o eth0 -j ACCEPT
+-A FORWARD -i eth0 -o ppp0 -j ACCEPT
+COMMIT
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A POSTROUTING -o eth0 -j MASQUERADE
+COMMIT
+EOF
+    iptables-restore < /etc/iptables/rules.v4
+  SHELL
+end

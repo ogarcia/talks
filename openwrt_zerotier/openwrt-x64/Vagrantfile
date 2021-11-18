@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "openwrt-19.07.2-64.box"
+
+  # Change SSH username and pass for vagrant
+  config.ssh.username = "root"
+  config.ssh.password = "root"
+  config.ssh.shell = "/bin/ash"
+  config.ssh.extra_args = ["-o", "HostKeyAlgorithms=ssh-rsa"]
+  config.ssh.insert_key = false
+
+  # LuCI is accessible from localhost:8080 in this case
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+  # NOTE: This will enable public access to the opened port, for only allow
+  # access via 127.0.0.1 use the following declaration
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # OpenWRT LAN
+  config.vm.network "private_network", ip: "192.168.58.169", auto_config: false
+  # OpenWRT WAN
+  config.vm.network "private_network", ip: "192.168.60.169", auto_config: false
+
+  # Disable vagrant synced folder.
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.provider "virtualbox" do |vb|
+    # Disable vagrant Guest Additions check
+    vb.check_guest_additions = false
+  end
+end

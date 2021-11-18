@@ -1,0 +1,48 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ogarcia/archlinux-x64"
+  config.vm.hostname = "pppoe-server"
+  config.vm.network "private_network", ip: "192.168.60.169"
+  config.vm.provision "shell", inline: <<-SHELL
+    pacman -Syyu --noconfirm --noprogressbar
+    pacman -S --noconfirm --noprogressbar rp-pppoe
+    mv /etc/ppp/pap-secrets /etc/ppp/pap-secrets.default
+    echo '"adslppp@telefonicanetpa" * "adslppp" 10.88.88.88' > /etc/ppp/pap-secrets
+    mv /etc/ppp/pppoe-server-options /etc/ppp/pppoe-server-options.default
+    echo -e 'auth\nnetmask 255.255.255.255\nms-dns 1.1.1.1' > /etc/ppp/pppoe-server-options
+    cat > /etc/systemd/system/pppoe-server.service << EOF
+[Unit]
+Description=pppoe-server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/pppoe-server -F -I enp0s8 -L 10.99.99.1 -R 10.88.88.1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl enable pppoe-server
+    sysctl -w net.ipv4.ip_forward=1
+    echo 'net.ipv4.ip_forward = 1' > /etc/sysctl.d/10-ip-forward.conf
+    mv /etc/iptables/iptables.rules /etc/iptables/iptables.rules.default
+    cat > /etc/iptables/iptables.rules << EOF
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A POSTROUTING -o enp0s3 -j MASQUERADE
+COMMIT
+EOF
+    systemctl enable iptables
+    shutdown -r now
+  SHELL
+end

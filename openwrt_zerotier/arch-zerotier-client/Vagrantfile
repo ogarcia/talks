@@ -1,0 +1,13 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ogarcia/archlinux-x64"
+  config.vm.hostname = "zerotier-client"
+  config.vm.provision "shell", inline: <<-SHELL
+    pacman -Syyu --noconfirm --noprogressbar
+    pacman -S --noconfirm --noprogressbar zerotier-one
+    systemctl enable zerotier-one
+    shutdown -r now
+  SHELL
+end
