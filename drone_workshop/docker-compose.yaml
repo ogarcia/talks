@@ -7,6 +7,7 @@ services:
       - "11022:22"
       - "11080:3000"
     volumes:
+      - gogs-backup:/backup
       - gogs-data:/data
 
   drone-server:
@@ -26,28 +27,31 @@ services:
       - DRONE_RPC_SECRET=supersecretpasswordveryverydifficultsiempresijuradoporsnoopy
 
   drone-agent:
-    image: drone/agent
+    image: drone/drone-runner-docker
     depends_on:
       - gogs
       - drone-server
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - DRONE_RPC_SERVER=http://drone-server
+      - DRONE_RPC_PROTO=http
+      - DRONE_RPC_HOST=drone-server
       - DRONE_RPC_SECRET=supersecretpasswordveryverydifficultsiempresijuradoporsnoopy
 
   drone-agent-bis:
-    image: drone/agent
+    image: drone/drone-runner-docker
     depends_on:
       - gogs
       - drone-server
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - DRONE_RPC_SERVER=http://drone-server
+      - DRONE_RPC_PROTO=http
+      - DRONE_RPC_HOST=drone-server
       - DRONE_RPC_SECRET=supersecretpasswordveryverydifficultsiempresijuradoporsnoopy
       - DRONE_RUNNER_LABELS=disk:ssd,memory:high,cpu:fast
 
 volumes:
+  gogs-backup:
   gogs-data:
   drone-data:
