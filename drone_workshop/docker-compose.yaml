@@ -4,8 +4,8 @@ services:
   gogs:
     image: gogs/gogs
     ports:
-      - "10022:22"
-      - "10080:3000"
+      - "11022:22"
+      - "11080:3000"
     volumes:
       - gogs-data:/data
 
@@ -14,15 +14,15 @@ services:
     depends_on:
       - gogs
     ports:
-      - "10090:80"
+      - "11090:80"
     volumes:
       - drone-data:/data
     environment:
       - DRONE_AGENTS_ENABLED=true
-      - DRONE_SERVER_HOST=${HOST}:10090
+      - DRONE_SERVER_HOST=${HOST}:11090
       - DRONE_SERVER_PROTO=http
       - DRONE_USER_CREATE=username:drone,machine:false,admin:true,token:634ac6a0e43978e80f37de439495944e
-      - DRONE_GOGS_SERVER=http://${HOST}:10080
+      - DRONE_GOGS_SERVER=http://${HOST}:11080
       - DRONE_RPC_SECRET=supersecretpasswordveryverydifficultsiempresijuradoporsnoopy
 
   drone-agent:

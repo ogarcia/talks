@@ -76,7 +76,7 @@ steps:
   commands:
   - echo "Máquina ${DRONE_SYSTEM_HOST}"
   when:
-    instance: [ localhost, "*.localhost", "hell:10090" ]
+    instance: [ localhost, "*.localhost", "hell:11090" ]
 
 - name: al promocionar independientemente de en que entorno
   image: alpine
