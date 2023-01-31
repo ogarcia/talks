@@ -41,8 +41,8 @@ Gogs.
    ejercicio lo mejor es meter de nombre de usuario y contraseña `drone`
    y de dirección de correo `drone@example.com`.
 
-Por último hay una configuración que debemos realizar a mano ya que es
-imposible hacerna ni por el instalador ni por la interfaz web. Esta
+Por último hay una configuración que debemos realizar a mano ya que no es
+posible hacerla ni con el instalador ni con la interfaz web. Esta
 configuración es necesaria para que Gogs permita enviar webhooks
 a direcciones locales, ya que por seguridad no lo permite. Para ello haremos
 lo siguiente.
